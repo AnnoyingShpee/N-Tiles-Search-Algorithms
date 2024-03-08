@@ -1,0 +1,6 @@
+# Seed for the random library.
+seed=935
+# Maximum runs for the tiles
+max_runs=10
+# Maximum level of depth first search algorithm.
+max_level=30
