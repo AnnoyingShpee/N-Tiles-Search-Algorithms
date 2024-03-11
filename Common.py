@@ -56,6 +56,17 @@ def convert_tiles_to_string(tiles):
     return ''.join(str(x) for row in tiles for x in row)
 
 
+def find_tile_position(tiles, number):
+    # Get the row containing the specific number
+    row = [s for s in tiles if number in s][0]
+    # Equivalent to code below:
+    # row = []
+    # for line in shuffled_tiles:
+    #     if 0 in line:
+    #         row = line
+    return tiles.index(row), row.index(number)
+
+
 def generate_state(tiles, shuffle=False):
     """
     Generates the state as [row, col, tiles_2d] where row and col is the row number and column number of the blank tile
@@ -78,14 +89,9 @@ def generate_state(tiles, shuffle=False):
     for i in range(0, len(temp), puzzle_side_len):
         tiles_2d.append(temp[i:i+puzzle_side_len])
 
-    # Get the row containing 0
-    row = [s for s in tiles_2d if 0 in s][0]
-    # Equivalent to code below:
-    # row = []
-    # for line in shuffled_tiles:
-    #     if 0 in line:
-    #         row = line
-    i, j = tiles_2d.index(row), row.index(0)
+    # Find the position of the blank tile
+    i, j = find_tile_position(tiles_2d, 0)
+
     return [i, j, tiles_2d]
 
 
@@ -98,10 +104,7 @@ def check_state(state, goal_state):
 
 def get_path(tiles, predecessor):
     path = []
-    # print(f"Predecessor {predecessor}")
     while tiles:
-        # print(f"Tiles {tiles}")
-        # print(f"Path {path}")
         path = [tiles] + path
         tiles_string = convert_tiles_to_string(tiles)
         tiles = predecessor[tiles_string][1]

@@ -8,11 +8,11 @@ iddfs_file = "IDDFS_output.csv"
 # [[8, 7, 6],
 #  [5, 4, 3],
 #  [2, 1, 0]]
-template_tiles = [8, 7, 6, 5, 4, 3, 2, 1, 0]
+template_tiles_list = [8, 7, 6, 5, 4, 3, 2, 1, 0]
 # [[1, 2, 3],
 #  [8, 0, 4],
 #  [7, 6, 5]]
-goal_tiles = [1, 2, 3, 8, 0, 4, 7, 6, 5]
+goal_tiles_list = [1, 2, 3, 8, 0, 4, 7, 6, 5]
 seed, max_runs, max_level = c.read_params_file(params_file)
 
 
@@ -33,45 +33,49 @@ def solve_puzzle(start_state, goal_state):
     # Total number of nodes opened
     nodes = 0
     # Lowest depth of the DFS Tree
-    lowest_depth = 0
+    lowest_depth = 1
     # Initialise the current state with the start state
     current_state = start_state
-    # A dictionary of nodes holding their level in the tree and the previous node
     next_tile_string = c.convert_tiles_to_string(current_state[2])
-    predecessor = {next_tile_string: [0, None]}
+    # A dictionary of nodes holding a list of values which corresponds to
+    # [0]depth level in the tree and [1]previous state's tiles
+    tree = {next_tile_string: [0, None]}
 
     # c.print_state(current_state, 0, highest_level)
 
-    stack = [start_state]
-    while stack:
-        if lowest_depth > max_level:
-            solution = 0
-            break
-        current_state = stack.pop()
-        if c.check_state(current_state, goal_state):
-            solution = 1
-            break
-        moves += 1
-        path = c.get_path(current_state[2], predecessor)
-        # print(f"Path {path}")
-        c.print_state(current_state, moves, lowest_depth)
-        for next_state in c.move(current_state):
-            # print(f"Next tile {next_state[2]}")
-            if next_state[2] not in path:
-                new_state = deepcopy(next_state)
+    while lowest_depth < max_level:
+        stack = [start_state]
+        while stack:
+            current_state = stack.pop()
+            if c.check_state(current_state, goal_state):
+                solution = 1
+                moves = lowest_depth
+                break
+            path = c.get_path(current_state[2], tree)
+            # print(f"Path {path}")
+            # Get the next nodes
+            for next_state in c.move(current_state):
                 nodes += 1
-                current_tile_string = c.convert_tiles_to_string(current_state[2])
-                stack.append(new_state)
-                # print(f"{stack}")
-                next_tile_string = c.convert_tiles_to_string(new_state[2])
-                next_depth = predecessor[current_tile_string][0] + 1
-                if next_depth > lowest_depth:
-                    lowest_depth = next_depth
-                predecessor[next_tile_string] = [next_depth, current_state[2]]
-                # c.print_state(new_state, next_depth, highest_level)
+                # print(f"Next tile {next_state[2]}")
+                if next_state[2] not in path:
+                    new_state = deepcopy(next_state)
+                    current_tile_string = c.convert_tiles_to_string(current_state[2])
+                    next_depth = tree[current_tile_string][0] + 1
+                    if next_depth <= lowest_depth:
+                        stack.append(new_state)
+                    next_tile_string = c.convert_tiles_to_string(new_state[2])
+                    # c.print_state(current_state, next_depth, lowest_depth)
+                    tree[next_tile_string] = [next_depth, current_state[2]]
+                    # c.print_state(new_state, next_depth, highest_level)
+        lowest_depth += 1
+        if solution:
+            break
 
     end_time = timeit.default_timer()
     time = end_time - start_time
+
+    if not solution:
+        moves = 0
 
     return start_state, solution, moves, nodes, time
 
@@ -80,9 +84,9 @@ def main():
     c.r.seed(seed)
     for run in range(max_runs):
         print(f"Run: {run}")
-        goal_state = c.generate_state(goal_tiles, shuffle=False)
+        goal_state = c.generate_state(goal_tiles_list, shuffle=False)
         # print(f"Template before {template_tiles}")
-        start_state = c.generate_state(template_tiles, shuffle=True)
+        start_state = c.generate_state(template_tiles_list, shuffle=True)
         # print(f"Template after {template_tiles}")
         # print(f"Start State = {start_state}")
         # start_state = [1, 2, [[5, 8, 3], [2, 6, 0], [4, 7, 1]]]
