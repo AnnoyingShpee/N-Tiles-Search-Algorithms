@@ -32,8 +32,18 @@ def read_params_file(params_file: str):
 
 
 def output_file(file_name, data, run, write_type="a"):
+    """
+    Outputs the data obtained from the algorithm and writes or appends to a CSV file
+    :param file_name: The name of the file
+    :param data: The data obtained from the algorithm
+    :param run: The ith run of the 10 runs
+    :param write_type: If "w", a new file is created or the existing file's contents are removed and the data is
+                       written. If "a" the data is appended to the file
+    :return:
+    """
     try:
         fw = open(file_name, write_type)
+        # Include headers for the CSV file
         if write_type == "w":
             fw.write("case_id,start_state,solution,moves,nodes,time\n")
         csv_string = f"{run}"
@@ -53,10 +63,21 @@ def output_file(file_name, data, run, write_type="a"):
 
 
 def convert_tiles_to_string(tiles):
+    """
+    Convert the tiles from a 2D list representation to a string representation. Used for creating the keys for the tree
+    :param tiles:
+    :return:
+    """
     return ''.join(str(x) for row in tiles for x in row)
 
 
 def find_tile_position(tiles, number):
+    """
+    Finds the specified number from the tiles list
+    :param tiles: 2D list
+    :param number: A number from 0 to total number of tiles.
+    :return:
+    """
     # Get the row containing the specific number
     row = [s for s in tiles if number in s][0]
     # Equivalent to code below:
@@ -69,8 +90,9 @@ def find_tile_position(tiles, number):
 
 def generate_state(tiles, shuffle=False):
     """
-    Generates the state as [row, col, tiles_2d] where row and col is the row number and column number of the blank tile
-    and tiles_2d is a 2D list representation of the tiles puzzle
+    Generates a state as [row, col, tiles_2d] where row and col is the row number and column number of the blank tile
+    and tiles_2d is a 2D list representation of the tiles puzzle. If shuffle is True, the list is shuffled before
+    it is converted to a 2D list
     :param tiles: A 1D list of the tiles
     :param shuffle: A boolean determining whether list is shuffled
     :return:
@@ -96,6 +118,12 @@ def generate_state(tiles, shuffle=False):
 
 
 def check_state(state, goal_state):
+    """
+    Checks if the state is equal to the goal state
+    :param state:
+    :param goal_state:
+    :return:
+    """
     if state[2] == goal_state[2]:
         return True
     else:
@@ -103,6 +131,12 @@ def check_state(state, goal_state):
 
 
 def get_path(tiles, predecessor):
+    """
+    Get the path traversed by going backwards from the end tile
+    :param tiles: A 2D list representation of the tiles
+    :param predecessor: A dictionary representing the tree
+    :return:
+    """
     path = []
     while tiles:
         path = [tiles] + path
@@ -131,7 +165,7 @@ def move_blank(i, j, n):
 
 def move(state):
     """
-    Moves the
+    Moves the blank tile
     :param state: A list of the state of the puzzle in the form [blank_row, blank_col, [[x,x,x] , [x,x,x], [x,x,x]]]
     :return:
     """
