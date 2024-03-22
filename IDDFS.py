@@ -243,6 +243,10 @@ def solve_puzzle(start_state, goal_state):
 
 def main():
     r.seed(seed)
+    # goal_state = generate_state(goal_tiles_list, shuffle=False)
+    # start_state = generate_state(template_tiles_list, shuffle=True)
+    # data = solve_puzzle(start_state, goal_state)
+    # print(data)
     # For each run case
     for run in range(max_runs):
         print(f"Run: {run}")

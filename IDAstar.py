@@ -267,9 +267,8 @@ def solve_puzzle(start_state, goal_state):
 
 def main():
     r.seed(seed)
-    # goal_state = c.generate_state(goal_tiles_list, shuffle=False)
-    # # print(f"Template before {template_tiles}")
-    # start_state = c.generate_state(template_tiles_list, shuffle=True)
+    # goal_state = generate_state(goal_tiles_list, shuffle=False)
+    # start_state = generate_state(template_tiles_list, shuffle=True)
     # data = solve_puzzle(start_state, goal_state)
     # print(data)
     for run in range(max_runs):
